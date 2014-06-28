@@ -3,7 +3,7 @@
  * Copyright (c) 2014 Andrew Mullins
  * Dual licensed: MIT/GPL
  */
-(function(window, undefined){
+;(function(window, undefined){
 
     var _breakpoints = {},
         M = window.Modernizr || {
