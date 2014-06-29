@@ -115,6 +115,19 @@
             query = (typeof arg1 == 'string') ? new BPQuery(arg1) : null,
             bp = null;
 
+
+        // run once - if needed
+        this.runOnce = function() {
+            runIt();
+        };
+
+
+        // $.mq('call:runOnce', some, arguments, go, here); // call a method
+        if (typeof arg1 == 'string' && arg1.indexOf('call:') == 0) {
+            var func = this[arg1.substr(5)];
+            if ($.isFunction(func)) return func.apply(this, args.slice(1));
+        }
+
         // $.mq('small', function(breakpoint) {});
         // $.mq('small', { onMatch : function(breakpoint) {}, onUnmatch : function(breakpoint) {} });
         // $.mq('(max-width: 500px)', function(breakpoint) {});
@@ -165,10 +178,13 @@
     };
 
 
+    function runIt() {
+        $.each(_breakpoints, function(key, bp) { bp.testAndFire(); });
+    }
+
+
     $(function() {
-        $(window).resize(function() {
-            $.each(_breakpoints, function(key, bp) { bp.testAndFire(); });
-        });
+        $(window).resize(runIt);
     });
 
 })(window);
