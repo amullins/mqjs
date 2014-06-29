@@ -99,7 +99,9 @@
         var parts = query.split(':'), self = this;
 
         // if mode is not specified in query, 'is' is assumed
-        this.mode = (parts.length == 1 || $.trim(parts[0]) == 'is') ? 'is' : 'not';
+        if (parts.length == 1) parts = ('is:' + query).split(':');
+
+        this.mode = ($.trim(parts[0]) == 'is') ? 'is' : 'not';
         this.query = $.trim(parts.slice(1).join(':'));
 
         this.getBreakpoint = function() {
