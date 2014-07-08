@@ -52,12 +52,9 @@
 
         var _testAndFire = function(mode) {
             var match = self.test(mode),
-                a = self.active(mode), // catch the current state before we change it
                 initFuncs = self.getFuncs('init', mode);
 
             self.active(mode, match);
-
-            if ((match && a) || (!match && !a)) return; // prevent funcs from running unnecessarily
 
             // do extra stuff for first match
             if (match && !self.inited(mode) && initFuncs.length) {
