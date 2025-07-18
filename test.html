@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>mqjs Efficiency Test</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="jquery.mqjs.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-box { 
+            padding: 20px; 
+            margin: 10px 0; 
+            border: 2px solid #ccc; 
+            background: #f9f9f9;
+        }
+        .active { 
+            background: #e8f5e8; 
+            border-color: #4CAF50; 
+        }
+        .status { 
+            position: fixed; 
+            top: 10px; 
+            right: 10px; 
+            padding: 10px; 
+            background: #333; 
+            color: white; 
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="status" id="status">Resize to test throttling</div>
+    
+    <h1>mqjs Efficiency Test</h1>
+    
+    <div class="test-box" id="small-box">
+        <h2>Small Screen (< 768px)</h2>
+        <p>This box should be highlighted when screen is small.</p>
+    </div>
+    
+    <div class="test-box" id="large-box">
+        <h2>Large Screen (>= 768px)</h2>
+        <p>This box should be highlighted when screen is large.</p>
+    </div>
+    
+    <div id="log">
+        <h3>Event Log (throttled to 100ms):</h3>
+        <ul id="event-list"></ul>
+    </div>
+
+    <script>
+        $(function() {
+            var eventCount = 0;
+            var $eventList = $('#event-list');
+            var $status = $('#status');
+            
+            function logEvent(message) {
+                eventCount++;
+                $eventList.prepend('<li>' + new Date().toLocaleTimeString() + ': ' + message + ' (Event #' + eventCount + ')</li>');
+                if ($eventList.children().length > 10) {
+                    $eventList.children().last().remove();
+                }
+            }
+            
+            // Setup breakpoints
+            $.mq({ 'small': '(max-width: 767px)', 'large': '(min-width: 768px)' });
+            
+            // Small screen handlers
+            $.mq('is:small', {
+                onMatch: function() {
+                    $('#small-box').addClass('active');
+                    $('#large-box').removeClass('active');
+                    $status.text('Small screen active');
+                    logEvent('Small screen matched');
+                },
+                onUnmatch: function() {
+                    $('#small-box').removeClass('active');
+                    logEvent('Small screen unmatched');
+                }
+            });
+            
+            // Large screen handlers
+            $.mq('is:large', {
+                onMatch: function() {
+                    $('#large-box').addClass('active');
+                    $('#small-box').removeClass('active');
+                    $status.text('Large screen active');
+                    logEvent('Large screen matched');
+                },
+                onUnmatch: function() {
+                    $('#large-box').removeClass('active');
+                    logEvent('Large screen unmatched');
+                }
+            });
+            
+            // Initialize
+            $.mq('call:runOnce');
+            
+            logEvent('mqjs initialized with throttling');
+        });
+    </script>
+</body>
+</html>

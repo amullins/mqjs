@@ -183,7 +183,11 @@
 
 
     $(function() {
-        $(window).resize(runIt);
+        var resizeTimeout;
+        $(window).resize(function() {
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(runIt, 100);
+        });
     });
 
 })(window);
